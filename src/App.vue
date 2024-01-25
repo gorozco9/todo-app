@@ -3,16 +3,20 @@ import {ref} from 'vue'
 const todo =ref([])
 const name = ref('')
 const input_content = ref('')
+const input_category =ref(null)
 
 const addTodo = () => {
-  if(input_content.value.trim() === "") {
+  if(input_content.value.trim() === '' || input_category.value == null) {
     return
   }
 
   todo.value.push({
     content: input_content.value,
+    category: input_category.value,
   })
-  input_content.value = " "
+  input_content.value = ''
+  input_category.value = null
+
   //console.log(todos)
 
 }
@@ -23,10 +27,11 @@ const addTodo = () => {
   <main class="app">
     <section class="greeting">
     <h2 class="title">
-      What's up, <input type="text" placeholder="name" v-mode1="name" />
+      What's up, <input type="text" placeholder="name" v-model="name" />
       <!-- {{ name }}  -->
     </h2>
     </section>
+
 
     <section class="create-todo">
       <h3> CREATE A TODO </h3>
@@ -34,6 +39,23 @@ const addTodo = () => {
         <h4>What's on your todo list?</h4>
         <input type="text" placeholder="e.g. make a video" v-model="input_content"/>
         <!-- {{ input_content }} -->
+
+        <h4>Pick a Category</h4>
+        <div class="options">
+          <label>
+            <input type="radio" name="category" value="business" v-model="input_category"/>
+            <span class="bubble business"></span>
+            <div>Business</div>
+          </label>
+
+          <label>
+            <input type="radio" name="category" value="personal" v-model="input_category"/>
+            <span class="bubble personal"></span>
+            <div>Personal</div>
+          </label>
+
+          <!-- {{ input_category }} -->
+        </div>
       </form>
     </section>
 

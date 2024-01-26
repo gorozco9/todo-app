@@ -1,16 +1,16 @@
 <script setup>
-import {ref} from 'vue'
-const todo =ref([])
+import {ref, onMounted, watch} from 'vue'
+const todos = ref([])
 const name = ref('')
 const input_content = ref('')
-const input_category =ref(null)
+const input_category = ref(null)
 
 const addTodo = () => {
   if(input_content.value.trim() === '' || input_category.value == null) {
     return
   }
 
-  todo.value.push({
+  todos.value.push({
     content: input_content.value,
     category: input_category.value,
     done: false,
@@ -24,8 +24,22 @@ const addTodo = () => {
 
 
 const removeTodo = (todo) => {
-  todo.value = todo.value.filter(t => t !== todo)
+  todos.value = todos.value.filter(t => t !== todo)
 }
+
+onMounted(() => {
+  name.value = localStorage.getItem('name') || ''
+  todos.value = JSON.parse(localStorage.getItem('todos'))||[]
+})
+
+watch(name, (newVal) => {
+  localStorage.setItem('name', newVal)
+})
+
+watch(todos, (newVal) => {
+  localStorage.setItem('todos', JSON.stringify(newVal))
+}, {deep: true})
+
 </script>
 
 <template>
@@ -42,19 +56,19 @@ const removeTodo = (todo) => {
       <h3> CREATE A TODO </h3>
       <form @submit.prevent="addTodo">
         <h4>What's on your todo list?</h4>
-        <input type="text" placeholder="e.g. make a video" v-model="input_content"/>
+        <input type="text" placeholder="e.g. make a video" v-model="input_content" />
         <!-- {{ input_content }} -->
 
         <h4>Pick a Category</h4>
         <div class="options">
           <label>
-            <input type="radio" name="category" value="business" v-model="input_category"/>
+            <input type="radio" name="category" value="business" v-model="input_category" />
             <span class="bubble business"></span>
             <div>Business</div>
           </label>
 
           <label>
-            <input type="radio" name="category" value="personal" v-model="input_category"/>
+            <input type="radio" name="category" value="personal" v-model="input_category" />
             <span class="bubble personal"></span>
             <div>Personal</div>
           </label>
@@ -69,7 +83,7 @@ const removeTodo = (todo) => {
 
     <section class="todo-list">
       <div class="list">
-        <div v-for="todo in todos" :class="`todo-item ${todo.done ? 'done' : 'not-done'}`" :key="todo">
+        <div v-for="todo in todos.slice().reverse()" :class="`todo-item ${todo.done ? 'done' : 'not-done'}`" :key="todo">
         <label>
           <input type="checkbox" v-model="todo.done" />
           <span :class="`bubble ${todo.category}`"></span>
